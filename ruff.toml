@@ -1,0 +1,21 @@
+line-length = 256
+target-version = "py311"
+ignore = ["E402"]
+
+# Exclude specific folders/files from linting
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    ".pytest_cache",
+    "node_modules",
+    "build",
+    "dist",
+    "*.egg-info",
+    # Add your specific folders here
+    "working/",
+    "outputs/",
+    "logs/",
+    "wandb/",
+    "contexts/",
+]

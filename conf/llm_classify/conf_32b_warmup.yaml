@@ -1,0 +1,83 @@
+seed: 899
+debug: false
+save_model: true
+use_wandb: false
+local_rank: 0
+enable_cuda_optimizations: true
+full_fit: false
+fold: 3
+save_merged_model: true
+
+dataset:
+  input_dataset: "conjuring92/mdc-synthetic-mix-v6"
+
+model:
+  backbone_path: Qwen/Qwen2.5-32B
+  max_length: 4096
+  num_labels: 3
+  num_proc: 8
+  use_gradient_checkpointing: true
+  compile_model: false
+  trust_remote_code: false
+  attn_implementation: flash_attention_2
+
+  tokenizer:
+    truncation_side: left
+    use_fast: true
+
+  use_bnb: false
+  use_lora: true
+  
+  lora:
+    target_modules:
+      - q_proj
+      - k_proj
+      - v_proj
+      - o_proj
+      - up_proj
+      - down_proj
+      - gate_proj
+    
+    r: 32
+    lora_alpha: 64
+    lora_dropout: 0.01
+    use_dora: false
+    
+    modules_to_save: []
+      # - lm_head
+      # - embed_tokens
+      
+train_params:
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  num_train_epochs: 1
+  gradient_accumulation_steps: 16
+
+  warmup_pct: 0.05
+  decay_target: 1.0 # No LR decay
+  eval_frequency: 50
+  patience: 20
+
+optimizer:
+  name: AdamW # 8bit
+
+  lr: 1e-6
+  lr_lora_a: 5e-6
+  lr_lora_b: 2e-5
+  lr_embed_tokens: 1e-6
+
+  weight_decay: 1e-2
+  max_grad_norm: 4.0
+
+  adam_beta_1: 0.9
+  adam_beta_2: 0.95
+  adam_epsilon: 1e-8 
+
+outputs:
+  model_dir: ./working/models/qwen32b_classify_warmup
+
+wandb:
+  project: mdc-dev
+  run_name: qwen-classify-32b-warmup
+  tags:
+    - qwen
